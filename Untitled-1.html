@@ -181,8 +181,9 @@
 
                 if (dbError) throw dbError;
 
+                // 회원가입 성공 알람 및 로그인 페이지로 리디렉션
                 alert("회원가입이 완료되었습니다!");
-                document.getElementById('signupForm').reset(); // Reset the form
+                window.location.href = "Untitled-2.html"; // 로그인 페이지로 이동
             } catch (error) {
                 console.error("Error: ", error);
                 if (error.message.includes('already registered')) {
@@ -196,6 +197,7 @@
 </body>
 
 </html>
+
 
 
 
