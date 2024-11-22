@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #121212; /* 매우 어두운 검정색 */
+            color: #f0f0f0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #1a1a1a; /* 어두운 회색 */
+            padding: 20px;
+            border: 2px solid #ff5e00; /* 주황색 테두리 */
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(255, 94, 0, 0.5); /* 주황색 그림자 */
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #ff5e00; /* 주황색 텍스트 */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+            color: #ff5e00; /* 주황색 레이블 */
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background-color: #262626; /* 더 어두운 배경색 */
+            border: 1px solid #ff5e00; /* 주황색 테두리 */
+            border-radius: 2px;
+            color: #f0f0f0;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #ff5e00; /* 주황색 배경 */
+            color: #121212; /* 어두운 검정색 텍스트 */
+            border: 2px solid #ff5e00; /* 주황색 테두리 */
+            border-radius: 2px;
+            font-size: 16px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #e24e00; /* 더 어두운 주황색 배경 */
+            border-color: #e24e00; /* 더 어두운 주황색 테두리 */
+        }
+
+        .form-footer {
+            margin-top: 20px;
+        }
+
+        .error {
+            color: #ff5e00; /* 주황색 오류 메시지 */
+            font-size: 12px;
+            margin-top: -10px;
+            display: block;
+        }
+
+        a {
+            color: #ff5e00; /* 주황색 링크 */
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #e24e00; /* 더 어두운 주황색 링크 */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>회원가입</h2>
+        <form id="signupForm">
+            <label for="username">아이디</label>
+            <input type="text" id="username" name="username" required placeholder="아이디를 입력하세요">
+
+            <label for="email">이메일</label>
+            <input type="email" id="email" name="email" required placeholder="이메일을 입력하세요">
+
+            <label for="password">비밀번호</label>
+            <input type="password" id="password" name="password" required placeholder="비밀번호를 입력하세요">
+
+            <label for="confirm_password">비밀번호 확인</label>
+            <input type="password" id="confirm_password" name="confirm_password" required placeholder="비밀번호를 다시 입력하세요">
+            <span id="error-message" class="error"></span>
+
+            <label for="dob">생년월일</label>
+            <input type="date" id="dob" name="dob" required>
+
+            <label for="gender">성별</label>
+            <select id="gender" name="gender" required>
+                <option value="male">남성</option>
+                <option value="female">여성</option>
+                <option value="other">기타</option>
+            </select>
+
+            <input type="submit" value="회원가입">
+        </form>
+        <div class="form-footer">
+            <p>이미 계정이 있으신가요? <a href="Untitled-2.html">로그인</a></p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import Supabase client
+        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+        // Supabase configuration
+        const supabaseUrl = "https://irxxdsmmgaslyatwsahv.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlyeHhkc21tZ2FzbHlhdHdzYWh2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIyNzk2NzUsImV4cCI6MjA0Nzg1NTY3NX0.Ot6REqlyDry3uLiGLVzbDXLw0aADEWfpKL6f8_V8S2E";
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        // Handle form submission
+        document.getElementById('signupForm').addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            const dob = document.getElementById('dob').value;
+            const gender = document.getElementById('gender').value;
+
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = ''; // Clear previous errors
+
+            // 비밀번호 확인
+            if (password !== confirmPassword) {
+                errorMessage.textContent = '비밀번호가 일치하지 않습니다.';
+                return;
+            }
+
+            if (password.length < 6) {
+                errorMessage.textContent = '비밀번호는 6자 이상이어야 합니다.';
+                return;
+            }
+
+            try {
+                // Sign up the user with Supabase Auth
+                const { data, error } = await supabase.auth.signUp({
+                    email,
+                    password
+                });
+
+                if (error) throw error;
+
+                // Insert additional user information into a "users" table
+                const { error: dbError } = await supabase.from('users').insert({
+                    uid: data.user.id,
+                    username,
+                    email,
+                    dob,
+                    gender,
+                    created_at: new Date().toISOString()
+                });
+
+                if (dbError) throw dbError;
+
+                alert("회원가입이 완료되었습니다!");
+                document.getElementById('signupForm').reset(); // Reset the form
+            } catch (error) {
+                console.error("Error: ", error);
+                if (error.message.includes('already registered')) {
+                    errorMessage.textContent = '이미 사용 중인 이메일입니다.';
+                } else {
+                    errorMessage.textContent = `오류: ${error.message}`;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
+
+
+
